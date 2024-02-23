@@ -21,60 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
+import {styles} from './tb-styles.js'
+
 export default class Toastbrot {
 	constructor(){
-		const styles = `
-			.toastbrot {
-				display: block;
-				position: absolute;
-				right: 15px;
-				bottom: 15px;
-			}
-			.toastbrot .tb-notification {
-				width: 290px;
-				height: 90px;
-				padding: 10px;
-				border: 1px solid black;
-				border-radius: 5px;
-				background-color: rgba( 0, 0, 0, 0.5);
-				color: #ffffff;
-				margin-top: 5px;
-				
-				transform-origin: right;
-				animation: tb-fade-in 3s ease-in-out forwards;
-			}
-			@keyframes tb-fade-in {
-				from {
-					visibility: hidden;
-					opacity: 0;
-				}
-				to {
-					visibility: visible;
-					opacity: 1;
-				}
-			}
-			@keyframes tb-notify {
-				0% {transform: scaleX(0);}
-				10% {transform: scaleX(1);}
-				13% {transform: scale(1.1);}
-				16% {transform: scale(1);}
-				55% {transform: scaleX(1); border-radius: 0%;}
-			}
-			.toastbrot .tb-close {
-				position: absolute;
-				top: 0;
-				right: 0;
-				padding: 5px;
-			}
-			.toastbrot .tb-close:hover{
-				color: white;
-				cursor: pointer;
-			}
-		`;
+		this.animations = {
+			'tb-bounce': {
+				in : 'tb-bounce-in-up',
+				out : 'tb-bounce-out-down'
+			},
+		};
 		this.css( styles );
-		const wrapper = this.node();
-			wrapper.className = 'toastbrot';
-		document.body.appendChild( wrapper );
+		this.wrapper = this.node();
+			this.wrapper.className = 'toastbrot';
+		document.body.appendChild( this.wrapper );
 	}
 	$( element ){
 		return document.querySelector( element );
@@ -90,9 +50,18 @@ export default class Toastbrot {
 		style.textContent = styles;
 		document.head.append( style );
 	}
-	create( msg, autoclose = 0 ){
+	create( options ){
+		options = options || {};
+		let msg = options.msg || '';
+		let autoclose = options.autoclose || 0;
+		let position = options.position || 'tb-bottom-right';
+		let animation = options.animation || 'tb-bounce';
+
+		this.wrapper.classList.toggle( position );
+
 		const notification = this.node();
 			notification.className = 'tb-notification';
+			notification.classList.toggle( this.animations[animation].in );// 'tb-bounce-in-up' 
 		const close_button = this.node();
 			close_button.className = 'tb-close';
 			close_button.innerHTML = '\u2715';
@@ -103,12 +72,19 @@ export default class Toastbrot {
 		notification.appendChild( message );
 		this.$( '.toastbrot' ).appendChild( notification );
 		close_button.addEventListener( 'click', function( event ){
-			notification.remove();
+			notification.classList.toggle( 'tb-bounce-out-down' );
+			setTimeout( function(){
+				notification.remove();
+			}, ( 1 * 1000 ) );
 		}, false );
 		if( autoclose > 0 ){
+			autoclose += 1; //FIX: add a second for animation
 			let seconds = 0;
 			let interval = setInterval( function(){
 				seconds++;
+				if( seconds === ( autoclose -1 ) ){
+					notification.classList.toggle( this.animations[animation].out );//'tb-bounce-out-down'
+				}
 				if( seconds === autoclose ){
 					notification.remove();
 				}
