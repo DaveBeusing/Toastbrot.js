@@ -22,7 +22,6 @@
  *
  */
 import {styles} from './tb-styles.js'
-
 export default class Toastbrot {
 	constructor(){
 		this.animations = {
@@ -56,12 +55,10 @@ export default class Toastbrot {
 		let autoclose = options.autoclose || 0;
 		let position = options.position || 'tb-bottom-right';
 		let animation = options.animation || 'tb-bounce';
-
 		this.wrapper.classList.toggle( position );
-
 		const notification = this.node();
 			notification.className = 'tb-notification';
-			notification.classList.toggle( this.animations[animation].in );// 'tb-bounce-in-up' 
+			notification.classList.toggle( this.animations[animation].in ); 
 		const close_button = this.node();
 			close_button.className = 'tb-close';
 			close_button.innerHTML = '\u2715';
@@ -83,7 +80,7 @@ export default class Toastbrot {
 			let interval = setInterval( function(){
 				seconds++;
 				if( seconds === ( autoclose -1 ) ){
-					notification.classList.toggle( this.animations[animation].out );//'tb-bounce-out-down'
+					notification.classList.toggle( this.animations[animation].out );
 				}
 				if( seconds === autoclose ){
 					notification.remove();
