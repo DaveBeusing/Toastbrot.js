@@ -21,9 +21,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-import {styles} from './tb-styles.js'
+import { styles } from './tb-styles.js'
 export default class Toastbrot {
-	constructor(){
+	constructor( position = 'tb-bottom-right' ){
+		this.positions = [
+			'tb-top-left',
+			'tb-top-right',
+			'tb-bottom-left',
+			'tb-bottom-right'
+		];
 		this.animations = {
 			'tb-bounce': {
 				in : 'tb-bounce-in-up',
@@ -32,8 +38,9 @@ export default class Toastbrot {
 		};
 		this.css( styles );
 		this.wrapper = this.node();
-			this.wrapper.className = 'toastbrot';
+		this.wrapper.className = 'toastbrot';
 		document.body.appendChild( this.wrapper );
+		this.setPosition( position );
 	}
 	$( element ){
 		return document.querySelector( element );
@@ -49,13 +56,23 @@ export default class Toastbrot {
 		style.textContent = styles;
 		document.head.append( style );
 	}
+	setPosition( position ){
+		this.positions.forEach( pos => {
+			this.wrapper.classList.remove( pos );
+		});
+		this.wrapper.classList.add( position );
+	}
 	create( options ){
 		options = options || {};
 		let msg = options.msg || '';
 		let autoclose = options.autoclose || 0;
-		let position = options.position || 'tb-bottom-right';
+		//let position = options.position || 'tb-bottom-right';
 		let animation = options.animation || 'tb-bounce';
-		this.wrapper.classList.toggle( position );
+		//TODO: use ES6 destructuring
+
+		//this.setPosition( position );
+		//this.wrapper.classList.toggle( position );
+		
 		const notification = this.node();
 			notification.className = 'tb-notification';
 			notification.classList.toggle( this.animations[animation].in ); 
@@ -80,12 +97,13 @@ export default class Toastbrot {
 			let interval = setInterval( function(){
 				seconds++;
 				if( seconds === ( autoclose -1 ) ){
+					notification.classList.toggle( this.animations[animation].in );
 					notification.classList.toggle( this.animations[animation].out );
 				}
 				if( seconds === autoclose ){
 					notification.remove();
 				}
-			}.bind( this ), 1000);
+			}.bind( this ), 1000 );
 			setTimeout( function(){
 				clearInterval( interval );
 			}, ( autoclose * 1000 ) );

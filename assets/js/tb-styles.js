@@ -34,6 +34,11 @@ export const styles = `
 	bottom: 20px;
 }
 
+.tb-top-left {
+	top: 20px;
+	left: 20px;
+}
+
 .toastbrot .tb-notification {
 	width: 290px;
 	height: 90px;
